@@ -18,6 +18,9 @@ export default function Home() {
   const [result, setResult] =
     useState<any>(null);
 
+  const [history, setHistory] =
+    useState<any[]>([]);
+
   const [loading, setLoading] =
     useState(false);
 
@@ -98,6 +101,14 @@ export default function Home() {
       await res.json();
 
     setResult(data);
+
+    if (!data.error) {
+
+      setHistory((prev) => [
+        data,
+        ...prev,
+      ]);
+    }
 
     setLoading(false);
   };
@@ -376,7 +387,6 @@ export default function Home() {
 
                           <div className="space-y-6 border-l-4 border-blue-600 pl-6">
 
-                            {/* STEP 1 */}
                             <div className="relative">
 
                               <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(1, currentStep)} rounded-full`}></div>
@@ -391,7 +401,6 @@ export default function Home() {
 
                             </div>
 
-                            {/* STEP 2 */}
                             <div className="relative">
 
                               <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(2, currentStep)} rounded-full`}></div>
@@ -406,7 +415,6 @@ export default function Home() {
 
                             </div>
 
-                            {/* STEP 3 */}
                             <div className="relative">
 
                               <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(3, currentStep)} rounded-full`}></div>
@@ -421,7 +429,6 @@ export default function Home() {
 
                             </div>
 
-                            {/* STEP 4 */}
                             <div className="relative">
 
                               <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(4, currentStep)} rounded-full`}></div>
@@ -436,7 +443,6 @@ export default function Home() {
 
                             </div>
 
-                            {/* STEP 5 */}
                             <div className="relative">
 
                               <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(5, currentStep)} rounded-full`}></div>
@@ -465,6 +471,75 @@ export default function Home() {
               </div>
 
             )}
+
+          </div>
+
+        </section>
+
+      )}
+
+      {/* RECENT SHIPMENTS */}
+
+      {session && history.length > 0 && (
+
+        <section className="max-w-5xl mx-auto px-4 md:px-6 pb-20">
+
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 md:p-10">
+
+            <h3 className="text-3xl font-extrabold text-gray-900 mb-8">
+              Recent Shipments
+            </h3>
+
+            <div className="grid gap-6">
+
+              {history.map((item, index) => (
+
+                <div
+                  key={index}
+                  className="bg-gray-100 border border-gray-300 rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                >
+
+                  <div>
+
+                    <p className="text-sm font-bold text-gray-600 mb-1">
+                      TRACKING NUMBER
+                    </p>
+
+                    <p className="text-xl font-bold text-black">
+                      {item.trackingNumber}
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-sm font-bold text-gray-600 mb-1">
+                      STATUS
+                    </p>
+
+                    <p className="text-lg font-bold text-blue-700">
+                      {item.status}
+                    </p>
+
+                  </div>
+
+                  <div>
+
+                    <p className="text-sm font-bold text-gray-600 mb-1">
+                      ROUTE
+                    </p>
+
+                    <p className="text-lg font-semibold text-black">
+                      {item.origin} → {item.destination}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
 
           </div>
 

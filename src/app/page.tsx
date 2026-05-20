@@ -74,6 +74,32 @@ export default function Home() {
     return "text-gray-500";
   };
 
+  const getStatusBadge = (
+    status: string
+  ) => {
+
+    switch (status) {
+
+      case "Shipment Created":
+        return "bg-gray-200 text-gray-800";
+
+      case "Package Received":
+        return "bg-yellow-100 text-yellow-800";
+
+      case "In Transit":
+        return "bg-blue-100 text-blue-700";
+
+      case "Out for Delivery":
+        return "bg-orange-100 text-orange-700";
+
+      case "Delivered":
+        return "bg-green-100 text-green-700";
+
+      default:
+        return "bg-gray-200 text-gray-800";
+    }
+  };
+
   const trackPackage = async () => {
 
     if (!trackingNumber) {
@@ -311,7 +337,7 @@ export default function Home() {
                         Shipment Details
                       </h4>
 
-                      <span className="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-bold text-sm w-fit">
+                      <span className={`${getStatusBadge(result.status)} px-5 py-2 rounded-full font-bold text-sm w-fit`}>
                         {result.status}
                       </span>
 
@@ -517,9 +543,9 @@ export default function Home() {
                       STATUS
                     </p>
 
-                    <p className="text-lg font-bold text-blue-700">
+                    <span className={`${getStatusBadge(item.status)} px-4 py-2 rounded-full font-bold text-sm inline-block`}>
                       {item.status}
-                    </p>
+                    </span>
 
                   </div>
 

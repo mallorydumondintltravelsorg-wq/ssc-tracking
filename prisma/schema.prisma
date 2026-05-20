@@ -23,8 +23,6 @@ model User {
 
   shipments Shipment[]
 
-  tickets   SupportTicket[]
-
   messages  ChatMessage[]
 }
 
@@ -83,10 +81,6 @@ model SupportTicket {
   status    String   @default("Open")
 
   createdAt DateTime @default(now())
-
-  userId    String?
-
-  user      User? @relation(fields: [userId], references: [id])
 }
 
 model ChatMessage {

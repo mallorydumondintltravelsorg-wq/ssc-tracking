@@ -155,6 +155,32 @@ export default function Home() {
     );
   };
 
+  const getProgressPercentage = (
+    status: string
+  ) => {
+
+    switch (status) {
+
+      case "Shipment Created":
+        return 20;
+
+      case "Package Received":
+        return 40;
+
+      case "In Transit":
+        return 60;
+
+      case "Out for Delivery":
+        return 80;
+
+      case "Delivered":
+        return 100;
+
+      default:
+        return 60;
+    }
+  };
+
   const trackPackage = async () => {
 
     if (!trackingNumber) {
@@ -457,6 +483,35 @@ export default function Home() {
                         <p className="text-lg font-bold text-green-700">
                           {getEstimatedDelivery(result.status)}
                         </p>
+
+                      </div>
+
+                    </div>
+
+                    {/* SHIPMENT PROGRESS */}
+
+                    <div className="mt-10">
+
+                      <div className="flex items-center justify-between mb-3">
+
+                        <h4 className="text-2xl font-extrabold text-gray-900">
+                          Shipment Progress
+                        </h4>
+
+                        <span className="text-lg font-bold text-blue-700">
+                          {getProgressPercentage(result.status)}%
+                        </span>
+
+                      </div>
+
+                      <div className="w-full bg-gray-300 rounded-full h-5 overflow-hidden">
+
+                        <div
+                          className="bg-blue-600 h-5 rounded-full transition-all duration-700"
+                          style={{
+                            width: `${getProgressPercentage(result.status)}%`,
+                          }}
+                        ></div>
 
                       </div>
 

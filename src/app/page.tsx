@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import {
   FaBox,
@@ -13,6 +13,9 @@ export default function Home() {
   const { data: session } = useSession();
 
   const [trackingNumber, setTrackingNumber] =
+    useState("");
+
+  const [historySearch, setHistorySearch] =
     useState("");
 
   const [result, setResult] =
@@ -220,6 +223,37 @@ export default function Home() {
     setLoading(false);
   };
 
+  const filteredHistory =
+    useMemo(() => {
+
+      return history.filter(
+        (item) => {
+
+          const search =
+            historySearch.toLowerCase();
+
+          return (
+            item.trackingNumber
+              ?.toLowerCase()
+              .includes(search) ||
+
+            item.status
+              ?.toLowerCase()
+              .includes(search) ||
+
+            item.origin
+              ?.toLowerCase()
+              .includes(search) ||
+
+            item.destination
+              ?.toLowerCase()
+              .includes(search)
+          );
+        }
+      );
+
+    }, [history, historySearch]);
+
   return (
     <main className="min-h-screen bg-gray-100 text-black">
 
@@ -305,7 +339,6 @@ export default function Home() {
 
       </section>
 
-      {/* AUTH MESSAGE */}
       {!session ? (
 
         <section className="pb-24 px-4">
@@ -368,7 +401,6 @@ export default function Home() {
 
             </div>
 
-            {/* INPUT AREA */}
             <div className="flex flex-col lg:flex-row gap-4">
 
               <input
@@ -397,7 +429,6 @@ export default function Home() {
 
             </div>
 
-            {/* TRACK RESULT */}
             {result && (
 
               <div className="mt-10 bg-white border-2 border-blue-200 rounded-2xl shadow-lg p-8">
@@ -427,7 +458,6 @@ export default function Home() {
                     <div className="grid md:grid-cols-2 gap-6">
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
-
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           TRACKING NUMBER
                         </p>
@@ -435,11 +465,9 @@ export default function Home() {
                         <p className="text-xl font-bold text-black break-all">
                           {result.trackingNumber}
                         </p>
-
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
-
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           CURRENT STATUS
                         </p>
@@ -447,11 +475,9 @@ export default function Home() {
                         <p className="text-xl font-bold text-blue-700">
                           {result.status}
                         </p>
-
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
-
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           ORIGIN
                         </p>
@@ -459,11 +485,9 @@ export default function Home() {
                         <p className="text-lg font-semibold text-black">
                           {result.origin}
                         </p>
-
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
-
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           DESTINATION
                         </p>
@@ -471,11 +495,9 @@ export default function Home() {
                         <p className="text-lg font-semibold text-black">
                           {result.destination}
                         </p>
-
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
-
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           ESTIMATED DELIVERY
                         </p>
@@ -483,13 +505,11 @@ export default function Home() {
                         <p className="text-lg font-bold text-green-700">
                           {getEstimatedDelivery(result.status)}
                         </p>
-
                       </div>
 
                     </div>
 
                     {/* SHIPMENT PROGRESS */}
-
                     <div className="mt-10">
 
                       <div className="flex items-center justify-between mb-3">
@@ -517,7 +537,7 @@ export default function Home() {
 
                     </div>
 
-                    {/* DYNAMIC SHIPMENT TIMELINE */}
+                    {/* TIMELINE */}
                     <div className="mt-10">
 
                       <h4 className="text-2xl font-extrabold text-gray-900 mb-6">
@@ -535,75 +555,28 @@ export default function Home() {
 
                           <div className="space-y-6 border-l-4 border-blue-600 pl-6">
 
-                            <div className="relative">
+                            {[
+                              "Shipment Created",
+                              "Package Received",
+                              "In Transit",
+                              "Out for Delivery",
+                              "Delivered",
+                            ].map((step, index) => (
 
-                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(1, currentStep)} rounded-full`}></div>
+                              <div
+                                key={index}
+                                className="relative"
+                              >
 
-                              <h5 className={`text-lg font-bold ${getTextColor(1, currentStep)}`}>
-                                Shipment Created
-                              </h5>
+                                <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(index + 1, currentStep)} rounded-full`}></div>
 
-                              <p className={getTextColor(1, currentStep)}>
-                                Shipment information received and package registered.
-                              </p>
+                                <h5 className={`text-lg font-bold ${getTextColor(index + 1, currentStep)}`}>
+                                  {step}
+                                </h5>
 
-                            </div>
+                              </div>
 
-                            <div className="relative">
-
-                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(2, currentStep)} rounded-full`}></div>
-
-                              <h5 className={`text-lg font-bold ${getTextColor(2, currentStep)}`}>
-                                Package Received
-                              </h5>
-
-                              <p className={getTextColor(2, currentStep)}>
-                                Shipment has been received at origin facility.
-                              </p>
-
-                            </div>
-
-                            <div className="relative">
-
-                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(3, currentStep)} rounded-full`}></div>
-
-                              <h5 className={`text-lg font-bold ${getTextColor(3, currentStep)}`}>
-                                In Transit
-                              </h5>
-
-                              <p className={getTextColor(3, currentStep)}>
-                                Package is currently moving through logistics network.
-                              </p>
-
-                            </div>
-
-                            <div className="relative">
-
-                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(4, currentStep)} rounded-full`}></div>
-
-                              <h5 className={`text-lg font-bold ${getTextColor(4, currentStep)}`}>
-                                Out for Delivery
-                              </h5>
-
-                              <p className={getTextColor(4, currentStep)}>
-                                Awaiting delivery dispatch.
-                              </p>
-
-                            </div>
-
-                            <div className="relative">
-
-                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(5, currentStep)} rounded-full`}></div>
-
-                              <h5 className={`text-lg font-bold ${getTextColor(5, currentStep)}`}>
-                                Delivered
-                              </h5>
-
-                              <p className={getTextColor(5, currentStep)}>
-                                Shipment delivery pending completion.
-                              </p>
-
-                            </div>
+                            ))}
 
                           </div>
 
@@ -627,20 +600,35 @@ export default function Home() {
       )}
 
       {/* RECENT SHIPMENTS */}
-
       {session && history.length > 0 && (
 
         <section className="max-w-5xl mx-auto px-4 md:px-6 pb-20">
 
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 md:p-10">
 
-            <h3 className="text-3xl font-extrabold text-gray-900 mb-8">
-              Recent Shipments
-            </h3>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+              <h3 className="text-3xl font-extrabold text-gray-900">
+                Recent Shipments
+              </h3>
+
+              <input
+                type="text"
+                placeholder="Search shipments..."
+                value={historySearch}
+                onChange={(e) =>
+                  setHistorySearch(
+                    e.target.value
+                  )
+                }
+                className="border-2 border-gray-300 rounded-xl px-5 py-3 w-full md:w-80 focus:outline-none focus:border-blue-600"
+              />
+
+            </div>
 
             <div className="grid gap-6">
 
-              {history.map((item, index) => (
+              {filteredHistory.map((item, index) => (
 
                 <div
                   key={index}

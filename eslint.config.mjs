@@ -1,4 +1,5 @@
-const nextVitals =
-  require("eslint-config-next/core-web-vitals");
+import nextVitals from "eslint-config-next/core-web-vitals";
 
-module.exports = nextVitals;
+export default [
+  ...nextVitals,
+];

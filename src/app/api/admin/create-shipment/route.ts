@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -43,6 +44,8 @@ export async function POST(
       });
     }
 
+    /* CHECK EXISTING */
+
     const existingShipment =
       await prisma.shipment.findFirst({
         where: {
@@ -50,20 +53,22 @@ export async function POST(
         },
       });
 
+    /* UPDATE */
+
     if (existingShipment) {
 
       const updatedShipment =
-        await prisma.shipment.update({
-          where: {
-            id:
-              existingShipment.id,
-          },
-          data: {
-            origin,
-            destination,
-            status,
-          },
-        });
+        await prisma.$queryRawUnsafe(
+          `
+          UPDATE "Shipment"
+          SET
+            origin='${origin}',
+            destination='${destination}',
+            status='${status}'
+          WHERE id='${existingShipment.id}'
+          RETURNING *;
+          `
+        );
 
       return NextResponse.json({
         message:
@@ -73,15 +78,32 @@ export async function POST(
       });
     }
 
+    /* CREATE */
+
     const shipment =
-      await prisma.shipment.create({
-        data: {
-          trackingNumber,
+      await prisma.$queryRawUnsafe(
+        `
+        INSERT INTO "Shipment"
+        (
+          id,
+          "trackingNumber",
           origin,
           destination,
           status,
-        },
-      });
+          "createdAt"
+        )
+        VALUES
+        (
+          gen_random_uuid()::text,
+          '${trackingNumber}',
+          '${origin}',
+          '${destination}',
+          '${status}',
+          NOW()
+        )
+        RETURNING *;
+        `
+      );
 
     return NextResponse.json({
       message:

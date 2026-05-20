@@ -100,6 +100,61 @@ export default function Home() {
     }
   };
 
+  const getEstimatedDelivery = (
+    status: string
+  ) => {
+
+    const today =
+      new Date();
+
+    let daysToAdd = 0;
+
+    switch (status) {
+
+      case "Shipment Created":
+        daysToAdd = 7;
+        break;
+
+      case "Package Received":
+        daysToAdd = 5;
+        break;
+
+      case "In Transit":
+        daysToAdd = 3;
+        break;
+
+      case "Out for Delivery":
+        daysToAdd = 1;
+        break;
+
+      case "Delivered":
+        daysToAdd = 0;
+        break;
+
+      default:
+        daysToAdd = 3;
+    }
+
+    const eta =
+      new Date(
+        today.getTime() +
+        daysToAdd *
+        24 *
+        60 *
+        60 *
+        1000
+      );
+
+    return eta.toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }
+    );
+  };
+
   const trackPackage = async () => {
 
     if (!trackingNumber) {
@@ -389,6 +444,18 @@ export default function Home() {
 
                         <p className="text-lg font-semibold text-black">
                           {result.destination}
+                        </p>
+
+                      </div>
+
+                      <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
+                        <p className="text-sm font-bold text-gray-600 mb-2">
+                          ESTIMATED DELIVERY
+                        </p>
+
+                        <p className="text-lg font-bold text-green-700">
+                          {getEstimatedDelivery(result.status)}
                         </p>
 
                       </div>

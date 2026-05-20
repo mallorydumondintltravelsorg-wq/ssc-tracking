@@ -184,6 +184,29 @@ export default function Home() {
     }
   };
 
+  const getTimelineDate = (
+    daysAgo: number
+  ) => {
+
+    const date =
+      new Date();
+
+    date.setDate(
+      date.getDate() - daysAgo
+    );
+
+    return date.toLocaleString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }
+    );
+  };
+
   const trackPackage = async () => {
 
     if (!trackingNumber) {
@@ -458,6 +481,7 @@ export default function Home() {
                     <div className="grid md:grid-cols-2 gap-6">
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           TRACKING NUMBER
                         </p>
@@ -465,9 +489,11 @@ export default function Home() {
                         <p className="text-xl font-bold text-black break-all">
                           {result.trackingNumber}
                         </p>
+
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           CURRENT STATUS
                         </p>
@@ -475,9 +501,11 @@ export default function Home() {
                         <p className="text-xl font-bold text-blue-700">
                           {result.status}
                         </p>
+
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           ORIGIN
                         </p>
@@ -485,9 +513,11 @@ export default function Home() {
                         <p className="text-lg font-semibold text-black">
                           {result.origin}
                         </p>
+
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           DESTINATION
                         </p>
@@ -495,9 +525,11 @@ export default function Home() {
                         <p className="text-lg font-semibold text-black">
                           {result.destination}
                         </p>
+
                       </div>
 
                       <div className="bg-gray-100 rounded-xl p-5 border border-gray-300">
+
                         <p className="text-sm font-bold text-gray-600 mb-2">
                           ESTIMATED DELIVERY
                         </p>
@@ -505,6 +537,7 @@ export default function Home() {
                         <p className="text-lg font-bold text-green-700">
                           {getEstimatedDelivery(result.status)}
                         </p>
+
                       </div>
 
                     </div>
@@ -556,11 +589,30 @@ export default function Home() {
                           <div className="space-y-6 border-l-4 border-blue-600 pl-6">
 
                             {[
-                              "Shipment Created",
-                              "Package Received",
-                              "In Transit",
-                              "Out for Delivery",
-                              "Delivered",
+                              {
+                                label: "Shipment Created",
+                                time: getTimelineDate(5),
+                              },
+
+                              {
+                                label: "Package Received",
+                                time: getTimelineDate(4),
+                              },
+
+                              {
+                                label: "In Transit",
+                                time: getTimelineDate(2),
+                              },
+
+                              {
+                                label: "Out for Delivery",
+                                time: getTimelineDate(1),
+                              },
+
+                              {
+                                label: "Delivered",
+                                time: getTimelineDate(0),
+                              },
                             ].map((step, index) => (
 
                               <div
@@ -571,8 +623,12 @@ export default function Home() {
                                 <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(index + 1, currentStep)} rounded-full`}></div>
 
                                 <h5 className={`text-lg font-bold ${getTextColor(index + 1, currentStep)}`}>
-                                  {step}
+                                  {step.label}
                                 </h5>
+
+                                <p className="text-sm text-gray-500 mt-1">
+                                  {step.time}
+                                </p>
 
                               </div>
 

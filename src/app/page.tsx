@@ -56,17 +56,41 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 text-black">
 
       {/* NAVBAR */}
-      <nav className="bg-white shadow-md px-8 py-5 flex items-center justify-between">
+      <nav className="bg-white shadow-md px-8 py-5 flex items-center justify-between flex-wrap gap-4">
 
         <h1 className="text-3xl font-extrabold text-blue-700">
           SSC Tracking
         </h1>
 
-        <div className="flex gap-4">
+        <div className="flex items-center gap-5 flex-wrap">
+
+          <a
+            href="/"
+            className="text-gray-700 hover:text-blue-700 font-semibold transition"
+          >
+            Home
+          </a>
+
+          {session && (
+            <>
+              <a
+                href="/admin"
+                className="text-gray-700 hover:text-blue-700 font-semibold transition"
+              >
+                Admin
+              </a>
+
+              <a
+                href="/support"
+                className="text-gray-700 hover:text-blue-700 font-semibold transition"
+              >
+                Support
+              </a>
+            </>
+          )}
 
           {!session ? (
             <>
-
               <a
                 href="/login"
                 className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-bold transition"
@@ -80,7 +104,6 @@ export default function Home() {
               >
                 Sign Up
               </a>
-
             </>
           ) : (
 
@@ -95,6 +118,7 @@ export default function Home() {
           )}
 
         </div>
+
       </nav>
 
       {/* HERO */}
@@ -106,7 +130,7 @@ export default function Home() {
         </h2>
 
         <p className="mt-6 text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-          Track packages, monitor delivery progress,
+          Track packages, monitor shipment progress,
           and manage logistics updates in real-time
           with SSC Tracking.
         </p>

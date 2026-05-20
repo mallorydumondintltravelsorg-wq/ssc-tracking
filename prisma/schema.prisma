@@ -21,8 +21,6 @@ model User {
 
   createdAt DateTime @default(now())
 
-  shipments Shipment[]
-
   messages  ChatMessage[]
 }
 
@@ -47,27 +45,6 @@ model Shipment {
   estimatedDelivery  DateTime?
 
   createdAt          DateTime @default(now())
-
-  userId             String?
-
-  user               User? @relation(fields: [userId], references: [id])
-
-  events             TrackingEvent[]
-}
-
-model TrackingEvent {
-
-  id          String   @id @default(cuid())
-
-  location    String
-
-  description String
-
-  createdAt   DateTime @default(now())
-
-  shipmentId  String
-
-  shipment    Shipment @relation(fields: [shipmentId], references: [id])
 }
 
 model SupportTicket {

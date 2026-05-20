@@ -50,8 +50,6 @@ export async function POST(
         },
       });
 
-    /* UPDATE */
-
     if (existingShipment) {
 
       const updatedShipment =
@@ -64,7 +62,7 @@ export async function POST(
             origin,
             destination,
             status,
-          } as any,
+          },
         });
 
       return NextResponse.json({
@@ -75,8 +73,6 @@ export async function POST(
       });
     }
 
-    /* CREATE */
-
     const shipment =
       await prisma.shipment.create({
         data: {
@@ -84,7 +80,7 @@ export async function POST(
           origin,
           destination,
           status,
-        } as any,
+        },
       });
 
     return NextResponse.json({

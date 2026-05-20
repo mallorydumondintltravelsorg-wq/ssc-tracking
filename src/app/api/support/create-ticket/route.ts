@@ -11,10 +11,10 @@ export async function POST(
       await req.json();
 
     const subject =
-      String(body.subject);
+      String(body.subject || "");
 
     const message =
-      String(body.message);
+      String(body.message || "");
 
     if (
       !subject ||
@@ -27,13 +27,20 @@ export async function POST(
       });
     }
 
-    await prisma.supportTicket.create({
-      data: {
-        subject,
-        message,
-        status: "Open",
-      } as any,
-    });
+    await prisma.$executeRawUnsafe(
+      `
+      INSERT INTO "SupportTicket"
+      ("id", "subject", "message", "status", "createdAt")
+      VALUES
+      (
+        gen_random_uuid()::text,
+        '${subject}',
+        '${message}',
+        'Open',
+        NOW()
+      )
+      `
+    );
 
     return NextResponse.json({
       message:

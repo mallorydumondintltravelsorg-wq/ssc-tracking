@@ -1,45 +1,101 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+export async function POST(
+  req: Request
+) {
 
-export async function POST(req: Request) {
   try {
-    const body = await req.json();
 
-    // Find first user in database
-    const user = await prisma.user.findFirst();
+    const body =
+      await req.json();
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "No user found in database" },
-        { status: 400 }
+    const trackingNumber =
+      String(
+        body.trackingNumber || ""
       );
+
+    const origin =
+      String(body.origin || "");
+
+    const destination =
+      String(
+        body.destination || ""
+      );
+
+    const status =
+      String(body.status || "");
+
+    if (
+      !trackingNumber ||
+      !origin ||
+      !destination ||
+      !status
+    ) {
+
+      return NextResponse.json({
+        error:
+          "All fields are required",
+      });
     }
 
-    const shipment = await prisma.shipment.create({
-      data: {
-        trackingNumber: body.trackingNumber,
-        senderName: body.senderName,
-        receiverName: body.receiverName,
-        origin: body.origin,
-        destination: body.destination,
-        status: body.status,
-        userId: user.id,
-      },
-    });
+    const existingShipment =
+      await prisma.shipment.findFirst({
+        where: {
+          trackingNumber,
+        },
+      });
+
+    /* UPDATE EXISTING */
+
+    if (existingShipment) {
+
+      const updatedShipment =
+        await prisma.shipment.update({
+          where: {
+            id:
+              existingShipment.id,
+          },
+          data: {
+            origin,
+            destination,
+            status,
+          },
+        });
+
+      return NextResponse.json({
+        message:
+          "Shipment updated successfully",
+        shipment:
+          updatedShipment,
+      });
+    }
+
+    /* CREATE NEW */
+
+    const shipment =
+      await prisma.shipment.create({
+        data: {
+          trackingNumber,
+          origin,
+          destination,
+          status,
+        },
+      });
 
     return NextResponse.json({
-      message: "Shipment created successfully",
+      message:
+        "Shipment created successfully",
       shipment,
     });
 
   } catch (error) {
-    console.error(error);
 
-    return NextResponse.json(
-      { error: "Failed to create shipment" },
-      { status: 500 }
-    );
+    console.log(error);
+
+    return NextResponse.json({
+      error:
+        "Shipment failed to create",
+    });
   }
 }

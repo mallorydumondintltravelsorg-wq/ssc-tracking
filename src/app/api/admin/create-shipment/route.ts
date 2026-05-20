@@ -16,7 +16,9 @@ export async function POST(
       );
 
     const origin =
-      String(body.origin || "");
+      String(
+        body.origin || ""
+      );
 
     const destination =
       String(
@@ -24,7 +26,9 @@ export async function POST(
       );
 
     const status =
-      String(body.status || "");
+      String(
+        body.status || ""
+      );
 
     if (
       !trackingNumber ||
@@ -46,7 +50,7 @@ export async function POST(
         },
       });
 
-    /* UPDATE EXISTING */
+    /* UPDATE */
 
     if (existingShipment) {
 
@@ -60,7 +64,7 @@ export async function POST(
             origin,
             destination,
             status,
-          },
+          } as any,
         });
 
       return NextResponse.json({
@@ -71,7 +75,7 @@ export async function POST(
       });
     }
 
-    /* CREATE NEW */
+    /* CREATE */
 
     const shipment =
       await prisma.shipment.create({
@@ -80,7 +84,7 @@ export async function POST(
           origin,
           destination,
           status,
-        },
+        } as any,
       });
 
     return NextResponse.json({

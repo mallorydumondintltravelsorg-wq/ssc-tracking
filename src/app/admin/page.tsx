@@ -22,6 +22,65 @@ export default function AdminPage() {
   const [editMode, setEditMode] =
     useState(false);
 
+  const deleteShipment =
+    async () => {
+
+      if (!trackingNumber) {
+
+        alert(
+          "Enter tracking number"
+        );
+
+        return;
+      }
+
+      const confirmed =
+        confirm(
+          "Are you sure you want to delete this shipment?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+
+        const res = await fetch(
+          "/api/admin/delete-shipment",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              trackingNumber,
+            }),
+          }
+        );
+
+        const data =
+          await res.json();
+
+        alert(
+          data.message ||
+          data.error ||
+          "Shipment deleted"
+        );
+
+      } catch (error) {
+
+        alert(
+          "Deletion failed"
+        );
+
+      }
+
+      setLoading(false);
+    };
+
   const createShipment =
     async () => {
 
@@ -74,9 +133,11 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-gray-100 p-6 md:p-10">
 
-      <div className="max-w-3xl mx-auto bg-white shadow-2xl rounded-3xl border border-gray-200 p-8 md:p-10">
+      <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl border border-gray-200 p-8 md:p-10">
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        {/* HEADER */}
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
 
           <div>
 
@@ -84,14 +145,14 @@ export default function AdminPage() {
               Admin Shipment Management
             </h1>
 
-            <p className="text-gray-600 mt-2">
-              Manage shipment operations,
-              tracking workflow, and delivery lifecycle.
+            <p className="text-gray-600 mt-2 text-lg">
+              Manage logistics workflow,
+              shipment lifecycle, and delivery operations.
             </p>
 
           </div>
 
-          <div className="bg-blue-100 text-blue-700 px-5 py-3 rounded-2xl font-bold">
+          <div className="bg-blue-100 text-blue-700 px-6 py-3 rounded-2xl font-bold text-lg">
             Enterprise Dashboard
           </div>
 
@@ -239,11 +300,11 @@ export default function AdminPage() {
 
           </div>
 
-          {/* OPERATION PANEL */}
+          {/* WORKFLOW VISUALIZATION */}
 
           <div className="bg-gray-100 border border-gray-300 rounded-2xl p-6">
 
-            <h3 className="text-2xl font-extrabold text-gray-900 mb-4">
+            <h3 className="text-2xl font-extrabold text-gray-900 mb-5">
               Shipment Workflow
             </h3>
 
@@ -259,7 +320,7 @@ export default function AdminPage() {
 
                 <div
                   key={index}
-                  className={`rounded-xl p-4 text-center font-bold border-2 ${
+                  className={`rounded-xl p-4 text-center font-bold border-2 transition ${
                     status === step
                       ? "bg-blue-700 text-white border-blue-700"
                       : "bg-white text-gray-700 border-gray-300"
@@ -274,7 +335,34 @@ export default function AdminPage() {
 
           </div>
 
-          {/* BUTTON */}
+          {/* SHIPMENT DELETION */}
+
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+
+            <h3 className="text-2xl font-extrabold text-red-700 mb-3">
+              Shipment Deletion
+            </h3>
+
+            <p className="text-gray-700 mb-5">
+              Permanently remove shipment records
+              from the logistics system.
+            </p>
+
+            <button
+              onClick={deleteShipment}
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-bold transition"
+            >
+
+              {loading
+                ? "Deleting Shipment..."
+                : "Delete Shipment"}
+
+            </button>
+
+          </div>
+
+          {/* CREATE / EDIT BUTTON */}
 
           <button
             onClick={createShipment}

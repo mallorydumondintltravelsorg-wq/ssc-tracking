@@ -599,6 +599,85 @@ export default function Home() {
 
       )}
 
+      {/* SHIPMENT ANALYTICS */}
+      {session && history.length > 0 && (
+
+        <section className="max-w-5xl mx-auto px-4 md:px-6 pb-12">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
+
+              <p className="text-sm font-bold text-gray-500 mb-2">
+                TOTAL SHIPMENTS
+              </p>
+
+              <h3 className="text-4xl font-extrabold text-blue-700">
+                {history.length}
+              </h3>
+
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
+
+              <p className="text-sm font-bold text-gray-500 mb-2">
+                DELIVERED
+              </p>
+
+              <h3 className="text-4xl font-extrabold text-green-700">
+                {
+                  history.filter(
+                    (item) =>
+                      item.status ===
+                      "Delivered"
+                  ).length
+                }
+              </h3>
+
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
+
+              <p className="text-sm font-bold text-gray-500 mb-2">
+                IN TRANSIT
+              </p>
+
+              <h3 className="text-4xl font-extrabold text-blue-700">
+                {
+                  history.filter(
+                    (item) =>
+                      item.status ===
+                      "In Transit"
+                  ).length
+                }
+              </h3>
+
+            </div>
+
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
+
+              <p className="text-sm font-bold text-gray-500 mb-2">
+                PENDING
+              </p>
+
+              <h3 className="text-4xl font-extrabold text-orange-700">
+                {
+                  history.filter(
+                    (item) =>
+                      item.status !==
+                      "Delivered"
+                  ).length
+                }
+              </h3>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      )}
+
       {/* RECENT SHIPMENTS */}
       {session && history.length > 0 && (
 

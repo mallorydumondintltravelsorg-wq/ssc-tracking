@@ -309,6 +309,89 @@ export default function Home() {
 
                     </div>
 
+                    {/* SHIPMENT TIMELINE */}
+                    <div className="mt-10">
+
+                      <h4 className="text-2xl font-extrabold text-gray-900 mb-6">
+                        Shipment Timeline
+                      </h4>
+
+                      <div className="space-y-6 border-l-4 border-blue-600 pl-6">
+
+                        <div className="relative">
+
+                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+
+                          <h5 className="text-lg font-bold text-gray-900">
+                            Shipment Created
+                          </h5>
+
+                          <p className="text-gray-700">
+                            Shipment information received and package registered.
+                          </p>
+
+                        </div>
+
+                        <div className="relative">
+
+                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+
+                          <h5 className="text-lg font-bold text-gray-900">
+                            Package Received
+                          </h5>
+
+                          <p className="text-gray-700">
+                            Shipment has been received at origin facility.
+                          </p>
+
+                        </div>
+
+                        <div className="relative">
+
+                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+
+                          <h5 className="text-lg font-bold text-gray-900">
+                            In Transit
+                          </h5>
+
+                          <p className="text-gray-700">
+                            Package is currently moving through logistics network.
+                          </p>
+
+                        </div>
+
+                        <div className="relative">
+
+                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-gray-400 rounded-full"></div>
+
+                          <h5 className="text-lg font-bold text-gray-500">
+                            Out for Delivery
+                          </h5>
+
+                          <p className="text-gray-500">
+                            Awaiting delivery dispatch.
+                          </p>
+
+                        </div>
+
+                        <div className="relative">
+
+                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-gray-400 rounded-full"></div>
+
+                          <h5 className="text-lg font-bold text-gray-500">
+                            Delivered
+                          </h5>
+
+                          <p className="text-gray-500">
+                            Shipment delivery pending completion.
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
                   </div>
 
                 )}

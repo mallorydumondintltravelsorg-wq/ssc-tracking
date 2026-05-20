@@ -7,10 +7,14 @@ export async function POST(
 
   try {
 
-    const {
-      subject,
-      message,
-    } = await req.json();
+    const body =
+      await req.json();
+
+    const subject =
+      String(body.subject);
+
+    const message =
+      String(body.message);
 
     if (
       !subject ||
@@ -27,7 +31,8 @@ export async function POST(
       data: {
         subject,
         message,
-      },
+        status: "Open",
+      } as any,
     });
 
     return NextResponse.json({

@@ -19,6 +19,9 @@ export default function AdminPage() {
   const [loading, setLoading] =
     useState(false);
 
+  const [editMode, setEditMode] =
+    useState(false);
+
   const createShipment =
     async () => {
 
@@ -58,8 +61,11 @@ export default function AdminPage() {
         await res.json();
 
       alert(
-        data.message ||
-        data.error
+        editMode
+          ? data.message ||
+            "Shipment updated"
+          : data.message ||
+            data.error
       );
 
       setLoading(false);
@@ -70,13 +76,63 @@ export default function AdminPage() {
 
       <div className="max-w-3xl mx-auto bg-white shadow-2xl rounded-3xl border border-gray-200 p-8 md:p-10">
 
-        <h1 className="text-4xl font-extrabold text-blue-700 mb-8">
-          Admin Shipment Management
-        </h1>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+          <div>
+
+            <h1 className="text-4xl font-extrabold text-blue-700">
+              Admin Shipment Management
+            </h1>
+
+            <p className="text-gray-600 mt-2">
+              Manage shipment operations,
+              tracking workflow, and delivery lifecycle.
+            </p>
+
+          </div>
+
+          <div className="bg-blue-100 text-blue-700 px-5 py-3 rounded-2xl font-bold">
+            Enterprise Dashboard
+          </div>
+
+        </div>
+
+        {/* MODE TOGGLE */}
+
+        <div className="flex gap-4 mb-8">
+
+          <button
+            onClick={() =>
+              setEditMode(false)
+            }
+            className={`flex-1 py-4 rounded-xl font-bold transition ${
+              !editMode
+                ? "bg-blue-700 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            Create Shipment
+          </button>
+
+          <button
+            onClick={() =>
+              setEditMode(true)
+            }
+            className={`flex-1 py-4 rounded-xl font-bold transition ${
+              editMode
+                ? "bg-orange-600 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            Edit Shipment
+          </button>
+
+        </div>
 
         <div className="space-y-6">
 
           {/* TRACKING NUMBER */}
+
           <div>
 
             <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -98,6 +154,7 @@ export default function AdminPage() {
           </div>
 
           {/* ORIGIN */}
+
           <div>
 
             <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -119,6 +176,7 @@ export default function AdminPage() {
           </div>
 
           {/* DESTINATION */}
+
           <div>
 
             <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -140,6 +198,7 @@ export default function AdminPage() {
           </div>
 
           {/* STATUS */}
+
           <div>
 
             <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -180,16 +239,60 @@ export default function AdminPage() {
 
           </div>
 
+          {/* OPERATION PANEL */}
+
+          <div className="bg-gray-100 border border-gray-300 rounded-2xl p-6">
+
+            <h3 className="text-2xl font-extrabold text-gray-900 mb-4">
+              Shipment Workflow
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+              {[
+                "Shipment Created",
+                "Package Received",
+                "In Transit",
+                "Out for Delivery",
+                "Delivered",
+              ].map((step, index) => (
+
+                <div
+                  key={index}
+                  className={`rounded-xl p-4 text-center font-bold border-2 ${
+                    status === step
+                      ? "bg-blue-700 text-white border-blue-700"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }`}
+                >
+                  {step}
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
           {/* BUTTON */}
+
           <button
             onClick={createShipment}
             disabled={loading}
-            className="w-full bg-blue-700 hover:bg-blue-800 text-white py-4 rounded-xl font-bold text-lg transition"
+            className={`w-full py-4 rounded-xl font-bold text-lg transition ${
+              editMode
+                ? "bg-orange-600 hover:bg-orange-700 text-white"
+                : "bg-blue-700 hover:bg-blue-800 text-white"
+            }`}
           >
 
             {loading
-              ? "Creating Shipment..."
-              : "Create Shipment"}
+              ? editMode
+                ? "Updating Shipment..."
+                : "Creating Shipment..."
+              : editMode
+                ? "Update Shipment"
+                : "Create Shipment"}
 
           </button>
 

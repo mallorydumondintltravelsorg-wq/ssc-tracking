@@ -21,6 +21,56 @@ export default function Home() {
   const [loading, setLoading] =
     useState(false);
 
+  const getCurrentStep = (
+    status: string
+  ) => {
+
+    switch (status) {
+
+      case "Shipment Created":
+        return 1;
+
+      case "Package Received":
+        return 2;
+
+      case "In Transit":
+        return 3;
+
+      case "Out for Delivery":
+        return 4;
+
+      case "Delivered":
+        return 5;
+
+      default:
+        return 3;
+    }
+  };
+
+  const getCircleColor = (
+    step: number,
+    current: number
+  ) => {
+
+    if (step <= current) {
+      return "bg-blue-600";
+    }
+
+    return "bg-gray-400";
+  };
+
+  const getTextColor = (
+    step: number,
+    current: number
+  ) => {
+
+    if (step <= current) {
+      return "text-gray-900";
+    }
+
+    return "text-gray-500";
+  };
+
   const trackPackage = async () => {
 
     if (!trackingNumber) {
@@ -56,13 +106,13 @@ export default function Home() {
     <main className="min-h-screen bg-gray-100 text-black">
 
       {/* NAVBAR */}
-      <nav className="bg-white shadow-md px-8 py-5 flex items-center justify-between flex-wrap gap-4">
+      <nav className="bg-white shadow-md px-4 md:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
 
         <h1 className="text-3xl font-extrabold text-blue-700">
           SSC Tracking
         </h1>
 
-        <div className="flex items-center gap-5 flex-wrap">
+        <div className="flex items-center justify-center gap-4 flex-wrap text-sm md:text-base">
 
           <a
             href="/"
@@ -124,7 +174,7 @@ export default function Home() {
       {/* HERO */}
       <section className="text-center py-20 px-6">
 
-        <h2 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
+        <h2 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
           Fast & Secure <br />
           Shipment Tracking
         </h2>
@@ -178,10 +228,9 @@ export default function Home() {
 
       ) : (
 
-        /* TRACKING SECTION */
-        <section className="max-w-4xl mx-auto px-4 pb-24">
+        <section className="max-w-5xl mx-auto px-4 md:px-6 pb-24">
 
-          <div className="bg-white shadow-xl rounded-3xl p-10 border border-gray-200">
+          <div className="bg-white shadow-xl rounded-3xl p-6 md:p-10 border border-gray-200">
 
             <div className="flex items-center gap-4 mb-8">
 
@@ -202,7 +251,7 @@ export default function Home() {
             </div>
 
             {/* INPUT AREA */}
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
 
               <input
                 type="text"
@@ -309,86 +358,103 @@ export default function Home() {
 
                     </div>
 
-                    {/* SHIPMENT TIMELINE */}
+                    {/* DYNAMIC SHIPMENT TIMELINE */}
                     <div className="mt-10">
 
                       <h4 className="text-2xl font-extrabold text-gray-900 mb-6">
                         Shipment Timeline
                       </h4>
 
-                      <div className="space-y-6 border-l-4 border-blue-600 pl-6">
+                      {(() => {
 
-                        <div className="relative">
+                        const currentStep =
+                          getCurrentStep(
+                            result.status
+                          );
 
-                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+                        return (
 
-                          <h5 className="text-lg font-bold text-gray-900">
-                            Shipment Created
-                          </h5>
+                          <div className="space-y-6 border-l-4 border-blue-600 pl-6">
 
-                          <p className="text-gray-700">
-                            Shipment information received and package registered.
-                          </p>
+                            {/* STEP 1 */}
+                            <div className="relative">
 
-                        </div>
+                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(1, currentStep)} rounded-full`}></div>
 
-                        <div className="relative">
+                              <h5 className={`text-lg font-bold ${getTextColor(1, currentStep)}`}>
+                                Shipment Created
+                              </h5>
 
-                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+                              <p className={getTextColor(1, currentStep)}>
+                                Shipment information received and package registered.
+                              </p>
 
-                          <h5 className="text-lg font-bold text-gray-900">
-                            Package Received
-                          </h5>
+                            </div>
 
-                          <p className="text-gray-700">
-                            Shipment has been received at origin facility.
-                          </p>
+                            {/* STEP 2 */}
+                            <div className="relative">
 
-                        </div>
+                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(2, currentStep)} rounded-full`}></div>
 
-                        <div className="relative">
+                              <h5 className={`text-lg font-bold ${getTextColor(2, currentStep)}`}>
+                                Package Received
+                              </h5>
 
-                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-blue-600 rounded-full"></div>
+                              <p className={getTextColor(2, currentStep)}>
+                                Shipment has been received at origin facility.
+                              </p>
 
-                          <h5 className="text-lg font-bold text-gray-900">
-                            In Transit
-                          </h5>
+                            </div>
 
-                          <p className="text-gray-700">
-                            Package is currently moving through logistics network.
-                          </p>
+                            {/* STEP 3 */}
+                            <div className="relative">
 
-                        </div>
+                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(3, currentStep)} rounded-full`}></div>
 
-                        <div className="relative">
+                              <h5 className={`text-lg font-bold ${getTextColor(3, currentStep)}`}>
+                                In Transit
+                              </h5>
 
-                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-gray-400 rounded-full"></div>
+                              <p className={getTextColor(3, currentStep)}>
+                                Package is currently moving through logistics network.
+                              </p>
 
-                          <h5 className="text-lg font-bold text-gray-500">
-                            Out for Delivery
-                          </h5>
+                            </div>
 
-                          <p className="text-gray-500">
-                            Awaiting delivery dispatch.
-                          </p>
+                            {/* STEP 4 */}
+                            <div className="relative">
 
-                        </div>
+                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(4, currentStep)} rounded-full`}></div>
 
-                        <div className="relative">
+                              <h5 className={`text-lg font-bold ${getTextColor(4, currentStep)}`}>
+                                Out for Delivery
+                              </h5>
 
-                          <div className="absolute -left-[38px] top-1 w-5 h-5 bg-gray-400 rounded-full"></div>
+                              <p className={getTextColor(4, currentStep)}>
+                                Awaiting delivery dispatch.
+                              </p>
 
-                          <h5 className="text-lg font-bold text-gray-500">
-                            Delivered
-                          </h5>
+                            </div>
 
-                          <p className="text-gray-500">
-                            Shipment delivery pending completion.
-                          </p>
+                            {/* STEP 5 */}
+                            <div className="relative">
 
-                        </div>
+                              <div className={`absolute -left-[38px] top-1 w-5 h-5 ${getCircleColor(5, currentStep)} rounded-full`}></div>
 
-                      </div>
+                              <h5 className={`text-lg font-bold ${getTextColor(5, currentStep)}`}>
+                                Delivered
+                              </h5>
+
+                              <p className={getTextColor(5, currentStep)}>
+                                Shipment delivery pending completion.
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        );
+                      })()}
 
                     </div>
 

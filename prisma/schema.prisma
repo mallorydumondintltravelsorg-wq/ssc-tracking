@@ -22,6 +22,10 @@ model User {
   createdAt DateTime @default(now())
 
   messages  ChatMessage[]
+
+  shipments Shipment[]
+
+  notifications Notification[]
 }
 
 model Shipment {
@@ -45,6 +49,14 @@ model Shipment {
   estimatedDelivery  DateTime?
 
   createdAt          DateTime @default(now())
+
+  userId             String?
+
+  user               User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  stages             ShipmentStage[]
+
+  @@index([userId, createdAt])
 }
 
 model SupportTicket {
@@ -58,6 +70,18 @@ model SupportTicket {
   status    String   @default("Open")
 
   createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  userId    String?
+
+  userName  String?
+
+  userEmail String?
+
+  messages  SupportMessage[]
+
+  @@index([userId, updatedAt])
 }
 
 model ChatMessage {
@@ -73,4 +97,72 @@ model ChatMessage {
   userId    String
 
   user      User @relation(fields: [userId], references: [id])
+}
+
+model ShipmentStage {
+
+  id             String   @id @default(cuid())
+
+  shipmentId     String
+
+  stage          String
+
+  sequence       Int
+
+  achievedAt     DateTime @default(now())
+
+  location       String?
+
+  notes          String?
+
+  createdAt      DateTime @default(now())
+
+  shipment       Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId, sequence])
+}
+
+model SupportMessage {
+
+  id        String   @id @default(cuid())
+
+  ticketId  String
+
+  senderId  String?
+
+  senderName String
+
+  senderRole String
+
+  message   String
+
+  createdAt DateTime @default(now())
+
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
+}
+
+model Notification {
+
+  id        String   @id @default(cuid())
+
+  userId    String
+
+  type      String
+
+  title     String
+
+  message   String
+
+  href      String?
+
+  readAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([type, createdAt])
 }

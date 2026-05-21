@@ -1,8 +1,24 @@
 import { prisma } from "@/lib/prisma";
+import { requireAdminSession } from "@/lib/auth";
+import { notifyAdmins, notifyShipmentOwner } from "@/lib/notifications";
+import { getShipmentStageSequence } from "@/lib/shipments";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Admin access required",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
     const body = await req.json();
     const trackingNumber = String(body.trackingNumber || "").trim();
     const location = String(body.location || "").trim();
@@ -22,6 +38,11 @@ export async function POST(req: Request) {
     const shipment = await prisma.shipment.findUnique({
       where: {
         trackingNumber,
+      },
+      select: {
+        id: true,
+        trackingNumber: true,
+        userId: true,
       },
     });
 
@@ -44,6 +65,46 @@ export async function POST(req: Request) {
         status,
         currentLocation: location,
       },
+    });
+
+    const sequence = getShipmentStageSequence(status);
+
+    await prisma.shipmentStage.upsert({
+      where: {
+        id: `${shipment.id}:${sequence}`,
+      },
+      update: {
+        stage: status,
+        sequence,
+        location,
+        notes: String(body.notes || "").trim() || null,
+        achievedAt: body.achievedAt ? new Date(body.achievedAt) : new Date(),
+      },
+      create: {
+        id: `${shipment.id}:${sequence}`,
+        shipmentId: shipment.id,
+        stage: status,
+        sequence,
+        location,
+        notes: String(body.notes || "").trim() || null,
+        achievedAt: body.achievedAt ? new Date(body.achievedAt) : new Date(),
+      },
+    });
+
+    await notifyShipmentOwner(
+      {
+        userId: shipment.userId,
+        trackingNumber: shipment.trackingNumber,
+        status,
+      },
+      `Shipment ${shipment.trackingNumber} moved to ${status} at ${location}`
+    );
+
+    await notifyAdmins({
+      type: "admin.shipment_stage",
+      title: "Shipment stage updated",
+      message: `${shipment.trackingNumber} moved to ${status}`,
+      href: "/admin#stages",
     });
 
     return NextResponse.json({

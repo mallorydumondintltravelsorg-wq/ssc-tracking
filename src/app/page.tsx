@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import NotificationCenter from "@/components/NotificationCenter";
 import {
   FaBox,
   FaSearch,
@@ -10,6 +11,8 @@ import {
   FaTruck,
   FaCheckCircle,
   FaClock,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 
 export default function Home() {
@@ -33,6 +36,9 @@ export default function Home() {
     useState<any[]>([]);
 
   const [loading, setLoading] =
+    useState(false);
+
+  const [menuOpen, setMenuOpen] =
     useState(false);
 
   const getCurrentStep = (
@@ -130,55 +136,6 @@ export default function Home() {
         year: "numeric",
         month: "long",
         day: "numeric",
-      }
-    );
-  };
-
-  const getCurrentLocation = (
-    status: string
-  ) => {
-
-    switch (status) {
-
-      case "Shipment Created":
-        return "Warehouse Facility";
-
-      case "Package Received":
-        return "Regional Sorting Center";
-
-      case "In Transit":
-        return "International Transit Hub";
-
-      case "Out for Delivery":
-        return "Local Delivery Center";
-
-      case "Delivered":
-        return "Recipient Address";
-
-      default:
-        return "Transit Hub";
-    }
-  };
-
-  const getTimelineDate = (
-    daysAgo: number
-  ) => {
-
-    const date =
-      new Date();
-
-    date.setDate(
-      date.getDate() - daysAgo
-    );
-
-    return date.toLocaleString(
-      "en-US",
-      {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
       }
     );
   };
@@ -288,79 +245,149 @@ export default function Home() {
     }, [history, historySearch]);
 
   return (
-    <main className="min-h-screen bg-gray-100 text-black">
+    <main className="min-h-screen bg-slate-100 text-slate-950">
 
       {/* NAVBAR */}
 
-      <nav className="bg-white shadow-md px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+      <nav className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950 px-5 py-4 shadow-xl">
 
-        <h1 className="text-3xl font-extrabold text-blue-700">
-          SSC Tracking
-        </h1>
-
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
 
           <Link
             href="/"
-            className="font-bold text-gray-700 hover:text-blue-700"
+            className="rounded-xl border border-blue-400/60 bg-slate-900 px-4 py-3 text-xl font-extrabold uppercase tracking-normal text-white shadow-sm shadow-blue-900/30"
           >
-            Home
+            SSC Tracking
           </Link>
 
-          {session && (
-            <>
-              <Link
-                href="/admin"
-                className="font-bold text-gray-700 hover:text-blue-700"
-              >
-                Admin
-              </Link>
-
-              <Link
-                href="/support"
-                className="font-bold text-gray-700 hover:text-blue-700"
-              >
-                Support
-              </Link>
-            </>
-          )}
-
-          {!session ? (
-            <>
-              <Link
-                href="/login"
-                className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-bold"
-              >
-                Sign In
-              </Link>
-
-              <Link
-                href="/register"
-                className="border-2 border-blue-700 text-blue-700 hover:bg-blue-100 px-6 py-3 rounded-xl font-bold"
-              >
-                Sign Up
-              </Link>
-            </>
-          ) : (
-
+          <div className="flex items-center gap-3">
+            {session && <NotificationCenter />}
             <button
-              onClick={() =>
-                signOut()
-              }
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2"
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 text-white transition hover:border-blue-400 hover:text-blue-200"
+              aria-label="Open navigation menu"
             >
-
-              <FaSignOutAlt />
-
-              Logout
-
+              <FaBars />
             </button>
-
-          )}
+          </div>
 
         </div>
 
       </nav>
+
+      <div
+        className={`fixed inset-0 z-50 bg-slate-950/60 transition-opacity ${
+          menuOpen
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setMenuOpen(false)}
+      />
+
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-sm flex-col border-l border-slate-800 bg-white shadow-2xl transition-transform duration-300 ${
+          menuOpen
+            ? "translate-x-0"
+            : "translate-x-full"
+        }`}
+        aria-label="Navigation drawer"
+      >
+
+        <div className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-6 py-5">
+
+          <span className="rounded-lg border border-blue-400/60 px-3 py-2 text-sm font-extrabold uppercase text-white">
+            SSC Tracking
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-700 text-white transition hover:border-blue-400"
+            aria-label="Close navigation menu"
+          >
+            <FaTimes />
+          </button>
+
+        </div>
+
+        <div className="flex flex-1 flex-col justify-between p-6">
+
+          <div className="space-y-3">
+
+            <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className="block rounded-xl px-4 py-3 text-lg font-bold text-slate-800 transition hover:bg-blue-50 hover:text-blue-700"
+            >
+              Home
+            </Link>
+
+            {session && (
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 text-lg font-bold text-slate-800 transition hover:bg-blue-50 hover:text-blue-700"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {session && (
+              <Link
+                href="/support"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 text-lg font-bold text-slate-800 transition hover:bg-blue-50 hover:text-blue-700"
+              >
+                Support
+              </Link>
+            )}
+
+            {session?.user?.role === "admin" && (
+              <Link
+                href="/admin"
+                onClick={() => setMenuOpen(false)}
+                className="block rounded-xl px-4 py-3 text-lg font-bold text-slate-800 transition hover:bg-blue-50 hover:text-blue-700"
+              >
+                Admin
+              </Link>
+            )}
+
+            {!session && (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-xl px-4 py-3 text-lg font-bold text-slate-800 transition hover:bg-blue-50 hover:text-blue-700"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-xl bg-blue-700 px-4 py-3 text-lg font-bold text-white transition hover:bg-blue-800"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+
+          </div>
+
+          {session && (
+            <button
+              onClick={() => signOut()}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-lg font-bold text-red-700 transition hover:bg-red-100"
+            >
+              <FaSignOutAlt />
+              Logout
+            </button>
+          )}
+
+        </div>
+
+      </aside>
 
       {/* HERO */}
 
@@ -531,9 +558,8 @@ export default function Home() {
                   </p>
 
                   <h4 className="text-2xl font-extrabold text-blue-700">
-                    {getCurrentLocation(
-                      result.status
-                    )}
+                    {result.currentLocation ||
+                      "Awaiting location update"}
                   </h4>
 
                 </div>
@@ -588,42 +614,18 @@ export default function Home() {
               <div className="space-y-6">
 
                 {[
-                  {
-                    step: 1,
-                    title:
-                      "Shipment Created",
-                    date:
-                      getTimelineDate(5),
-                  },
-                  {
-                    step: 2,
-                    title:
-                      "Package Received",
-                    date:
-                      getTimelineDate(4),
-                  },
-                  {
-                    step: 3,
-                    title:
-                      "In Transit",
-                    date:
-                      getTimelineDate(2),
-                  },
-                  {
-                    step: 4,
-                    title:
-                      "Out for Delivery",
-                    date:
-                      getTimelineDate(1),
-                  },
-                  {
-                    step: 5,
-                    title:
-                      "Delivered",
-                    date:
-                      getTimelineDate(0),
-                  },
-                ].map((item) => {
+                  "Shipment Created",
+                  "Package Received",
+                  "In Transit",
+                  "Out for Delivery",
+                  "Delivered",
+                ].map((title, index) => {
+
+                  const stage =
+                    result.stages?.find(
+                      (item: any) =>
+                        item.stage === title
+                    );
 
                   const currentStep =
                     getCurrentStep(
@@ -631,13 +633,13 @@ export default function Home() {
                     );
 
                   const completed =
-                    item.step <=
-                    currentStep;
+                    Boolean(stage) ||
+                    index + 1 <= currentStep;
 
                   return (
 
                     <div
-                      key={item.step}
+                      key={title}
                       className="flex items-start gap-5"
                     >
 
@@ -666,12 +668,22 @@ export default function Home() {
                               : "text-gray-500"
                           }`}
                         >
-                          {item.title}
+                          {title}
                         </h5>
 
                         <p className="text-gray-600 mt-1">
-                          {item.date}
+                          {stage?.achievedAt
+                            ? new Date(stage.achievedAt).toLocaleString()
+                            : completed
+                            ? "Completed before detailed stage tracking"
+                            : "Pending"}
                         </p>
+
+                        {stage?.location && (
+                          <p className="text-sm font-semibold text-blue-700">
+                            {stage.location}
+                          </p>
+                        )}
 
                       </div>
 

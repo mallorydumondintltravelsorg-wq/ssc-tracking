@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { requireAdminSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -6,6 +7,18 @@ export async function POST(
 ) {
 
   try {
+    const session = await requireAdminSession();
+
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Admin access required",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
 
     const {
       trackingNumber,

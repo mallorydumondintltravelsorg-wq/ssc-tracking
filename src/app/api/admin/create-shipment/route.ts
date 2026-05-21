@@ -1,123 +1,69 @@
 import { prisma } from "@/lib/prisma";
-
 import { NextResponse } from "next/server";
 
-export async function POST(
-  req: Request
-) {
-
+export async function POST(req: Request) {
   try {
+    const body = await req.json();
+    const trackingNumber = String(body.trackingNumber || "").trim();
+    const origin = String(body.origin || "").trim();
+    const destination = String(body.destination || "").trim();
+    const status = String(body.status || "").trim();
 
-    const body =
-      await req.json();
-
-    const trackingNumber =
-      String(
-        body.trackingNumber || ""
-      );
-
-    const origin =
-      String(
-        body.origin || ""
-      );
-
-    const destination =
-      String(
-        body.destination || ""
-      );
-
-    const status =
-      String(
-        body.status || ""
-      );
-
-    if (
-      !trackingNumber ||
-      !origin ||
-      !destination ||
-      !status
-    ) {
-
-      return NextResponse.json({
-        error:
-          "All fields are required",
-      });
-    }
-
-    /* CHECK EXISTING */
-
-    const existingShipment =
-      await prisma.shipment.findFirst({
-        where: {
-          trackingNumber,
+    if (!trackingNumber || !origin || !destination || !status) {
+      return NextResponse.json(
+        {
+          error: "All fields are required",
         },
-      });
-
-    /* UPDATE */
-
-    if (existingShipment) {
-
-      const updatedShipment =
-        await prisma.$queryRawUnsafe(
-          `
-          UPDATE "Shipment"
-          SET
-            origin='${origin}',
-            destination='${destination}',
-            status='${status}'
-          WHERE id='${existingShipment.id}'
-          RETURNING *;
-          `
-        );
-
-      return NextResponse.json({
-        message:
-          "Shipment updated successfully",
-        shipment:
-          updatedShipment,
-      });
+        {
+          status: 400,
+        }
+      );
     }
 
-    /* CREATE */
+    const existingShipment = await prisma.shipment.findUnique({
+      where: {
+        trackingNumber,
+      },
+      select: {
+        id: true,
+      },
+    });
 
-    const shipment =
-      await prisma.$queryRawUnsafe(
-        `
-        INSERT INTO "Shipment"
-        (
-          id,
-          "trackingNumber",
-          origin,
-          destination,
-          status,
-          "createdAt"
-        )
-        VALUES
-        (
-          gen_random_uuid()::text,
-          '${trackingNumber}',
-          '${origin}',
-          '${destination}',
-          '${status}',
-          NOW()
-        )
-        RETURNING *;
-        `
-      );
+    const shipment = await prisma.shipment.upsert({
+      where: {
+        trackingNumber,
+      },
+      update: {
+        origin,
+        destination,
+        status,
+        currentLocation: origin,
+      },
+      create: {
+        trackingNumber,
+        origin,
+        destination,
+        status,
+        currentLocation: origin,
+      },
+    });
 
     return NextResponse.json({
-      message:
-        "Shipment created successfully",
+      message: existingShipment
+        ? "Shipment updated successfully"
+        : "Shipment created successfully",
       shipment,
     });
-
   } catch (error) {
+    console.error("Shipment create/update failed", error);
 
-    console.log(error);
-
-    return NextResponse.json({
-      error:
-        "Shipment failed to create",
-    });
+    return NextResponse.json(
+      {
+        error: "Shipment failed to create",
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }

@@ -3,8 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create a demo user first
-  const user = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "demo@ssc.com" },
     update: {},
     create: {
@@ -26,19 +25,6 @@ async function main() {
       destination: "Lagos",
       status: "In Transit",
       currentLocation: "Paris Hub",
-      userId: user.id,
-      events: {
-        create: [
-          {
-            location: "London Warehouse",
-            description: "Package received at warehouse",
-          },
-          {
-            location: "Paris Hub",
-            description: "Package in transit through hub",
-          },
-        ],
-      },
     },
   });
 

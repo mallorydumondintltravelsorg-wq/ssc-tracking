@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import {
   FaBox,
   FaSearch,
@@ -299,46 +300,46 @@ export default function Home() {
 
         <div className="flex items-center gap-4 flex-wrap">
 
-          <a
+          <Link
             href="/"
             className="font-bold text-gray-700 hover:text-blue-700"
           >
             Home
-          </a>
+          </Link>
 
           {session && (
             <>
-              <a
+              <Link
                 href="/admin"
                 className="font-bold text-gray-700 hover:text-blue-700"
               >
                 Admin
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/support"
                 className="font-bold text-gray-700 hover:text-blue-700"
               >
                 Support
-              </a>
+              </Link>
             </>
           )}
 
           {!session ? (
             <>
-              <a
+              <Link
                 href="/login"
                 className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-xl font-bold"
               >
                 Sign In
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/register"
                 className="border-2 border-blue-700 text-blue-700 hover:bg-blue-100 px-6 py-3 rounded-xl font-bold"
               >
                 Sign Up
-              </a>
+              </Link>
             </>
           ) : (
 

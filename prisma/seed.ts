@@ -19,8 +19,6 @@ async function main() {
     update: {},
     create: {
       trackingNumber: "SSC001",
-      senderName: "John Sender",
-      receiverName: "Alice Receiver",
       origin: "London",
       destination: "Lagos",
       status: "In Transit",
